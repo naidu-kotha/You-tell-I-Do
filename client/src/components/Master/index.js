@@ -31,6 +31,45 @@ class Master extends Component {
     sym: operators[0].text,
     secondNum: numberWords[0].word,
     questionsArray: [],
+    answersArray: [],
+  }
+
+  componentDidMount() {
+    this.getAnswers()
+  }
+
+  getAnswers = () => {
+    const answersList = localStorage.getItem('answersList')
+    // console.log(answersList)
+    const answersArray = []
+    answersArray.push(JSON.parse(answersList))
+    // console.log(answersArray)
+    this.setState({answersArray: answersArray[0]})
+  }
+
+  displayAnswers = () => {
+    const {answersArray} = this.state
+    console.log(answersArray)
+    const ans = []
+    const array = Object.entries(answersArray)
+    ans.push(array)
+    console.log(array)
+
+    return (
+      <>
+        {array.map(each => (
+          <div className="answers-container">
+            <h1>{each[0]}</h1>
+            {each[1].map(a => (
+              <>
+                <p>{a.question}</p>
+                <p>{a.givenAnswer}</p>
+              </>
+            ))}
+          </div>
+        ))}
+      </>
+    )
   }
 
   onChange = event => {
@@ -190,6 +229,7 @@ class Master extends Component {
             </ol>
           </form>
         </div>
+        {this.displayAnswers()}
       </div>
     )
   }

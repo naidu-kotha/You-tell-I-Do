@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 import {Component} from 'react'
 import {Redirect} from 'react-router-dom'
 import Cookies from 'js-cookie'
@@ -7,7 +8,12 @@ import Logout from '../Logout'
 import './index.css'
 
 class Student extends Component {
-  state = {activityLogClicked: false, questionsArray: [], answersArray: []}
+  state = {
+    activityLogClicked: false,
+    questionsArray: [],
+    answersArray: [],
+    username: '',
+  }
 
   componentDidMount() {
     this.getQuestions()
@@ -25,7 +31,7 @@ class Student extends Component {
     const answerObj = questionsArray.filter(each => each.id === id)
     const answerObject = answerObj[0]
     answerObject.givenAnswer = parseInt(event.target.value)
-    console.log(answerObject)
+    // console.log(answerObject)
     const answerIndex = answersArray.findIndex(each => each.id === id)
     if (answerIndex === -1) {
       this.setState(prevState => ({
@@ -39,6 +45,23 @@ class Student extends Component {
 
   submitAnswers = event => {
     event.preventDefault()
+    const {username, answersArray} = this.state
+    if (username === '') {
+      alert('Please Enter Your Name')
+    } else {
+      const nameKey = `${username}'s Answer`
+      //   const ans = {[nameKey]: answersArray}
+      const answers = localStorage.getItem('answersList')
+      if (answers === null) {
+        const ans = {[nameKey]: answersArray}
+        localStorage.setItem('answersList', JSON.stringify(ans))
+      } else {
+        const a = JSON.parse(answers)
+        a[nameKey] = answersArray
+        //   console.log(a)
+        localStorage.setItem('answersList', JSON.stringify(a))
+      }
+    }
   }
 
   activityLog = () => {
@@ -74,6 +97,10 @@ class Student extends Component {
     }))
   }
 
+  onChangeUsername = event => {
+    this.setState({username: event.target.value})
+  }
+
   render() {
     const {activityLogClicked} = this.state
     const studentJwtToken = Cookies.get('student_jwt_token')
@@ -97,6 +124,18 @@ class Student extends Component {
         <div className="student-sub-container">
           <div className="welcome-container">
             <h1 className="student-heading">Welcome</h1>
+            <div>
+              <label htmlFor="name" className="name-label-text">
+                Name:
+              </label>
+              <input
+                type="text"
+                className="name-input"
+                id="name"
+                placeholder="Enter your name here"
+                onChange={this.onChangeUsername}
+              />
+            </div>
             <p className="test-details">Check Activity Log to begin test</p>
           </div>
           {activityLogClicked && this.activityLog()}
