@@ -49,7 +49,7 @@ class Login extends Component {
         if (data.result) {
           const jwtToken = data.jwt_token
           console.log(jwtToken)
-          console.log(history)
+          //   console.log(history)
           if (category === 'MASTER') {
             Cookies.set('master_jwt_token', jwtToken, {expires: 1, path: '/'})
             history.replace('/master')

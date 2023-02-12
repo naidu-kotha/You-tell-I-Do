@@ -38,10 +38,36 @@ class Master extends Component {
     })
   }
 
+  calculateResult = (a, op, b) => {
+    switch (op) {
+      case '+':
+        return a + b
+      case '-':
+        return a - b
+      case '*':
+        return a * b
+      case '/':
+        return parseInt(a / b)
+      default:
+        return null
+    }
+  }
+
   submitQuestion = event => {
     event.preventDefault()
     const {firstNum, sym, secondNum} = this.state
-    const result = `${firstNum}(${sym}(${secondNum}()))`
+    const question = `${firstNum}(${sym}(${secondNum}()))`
+    const num1Obj = numberWords.find(num => num.word === firstNum)
+    const operatorObj = operators.find(operator => operator.text === sym)
+    const num2Obj = numberWords.find(num => num.word === secondNum)
+    const num1 = num1Obj.value
+    const op = operatorObj.operator
+    const num2 = num2Obj.value
+    // console.log(num1Obj.value)
+    // console.log(operatorObj.operator)
+    // console.log(num2Obj.value)
+    console.log(question)
+    const result = this.calculateResult(num1, op, num2)
     console.log(result)
   }
 
