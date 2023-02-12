@@ -1,5 +1,6 @@
 import {Component} from 'react'
 import {Redirect} from 'react-router-dom'
+import {v4 as uuid} from 'uuid'
 import Cookies from 'js-cookie'
 import Logout from '../Logout'
 import './index.css'
@@ -29,6 +30,7 @@ class Master extends Component {
     firstNum: numberWords[0].word,
     sym: operators[0].text,
     secondNum: numberWords[0].word,
+    questionsArray: [],
   }
 
   onChange = event => {
@@ -69,9 +71,32 @@ class Master extends Component {
     console.log(question)
     const result = this.calculateResult(num1, op, num2)
     console.log(result)
+    const mathQuestion = {
+      id: uuid(),
+      question,
+      answer: result,
+    }
+    console.log(mathQuestion)
+    this.setState(prevState => ({
+      questionsArray: [...prevState.questionsArray, mathQuestion],
+    }))
+  }
+
+  onDelete = event => {
+    const id = event.currentTarget.getAttribute('data-value')
+    const {questionsArray} = this.state
+    const filteredQuestionsArray = questionsArray.filter(each => each.id !== id)
+    this.setState({questionsArray: filteredQuestionsArray})
+  }
+
+  createTest = event => {
+    event.preventDefault()
+    const {questionsArray} = this.state
+    localStorage.setItem('questionList', JSON.stringify(questionsArray))
   }
 
   render() {
+    const {questionsArray} = this.state
     const masterJwtToken = Cookies.get('master_jwt_token')
     if (masterJwtToken === undefined) {
       return <Redirect to="/login" />
@@ -80,47 +105,76 @@ class Master extends Component {
       <div className="master-container">
         <Logout />
         <h1 className="master-heading">Prepare your questions</h1>
-        <form className="form-container" onSubmit={this.submitQuestion}>
-          <div className="question-container">
-            <select
-              className="number-container"
-              name="firstNum"
-              onChange={this.onChange}
-            >
-              {numberWords.map(each => (
-                <option key={each.id} value={each.word}>
-                  {each.value}
-                </option>
+        <div className="form-list-container">
+          <form className="form-container" onSubmit={this.submitQuestion}>
+            <div className="question-container">
+              <select
+                className="number-container"
+                name="firstNum"
+                onChange={this.onChange}
+              >
+                {numberWords.map(each => (
+                  <option key={each.id} value={each.word}>
+                    {each.value}
+                  </option>
+                ))}
+              </select>
+              <select
+                className="operator-container"
+                name="sym"
+                onChange={this.onChange}
+              >
+                {operators.map(each => (
+                  <option key={each.id} value={each.text}>
+                    {each.operator}
+                  </option>
+                ))}
+              </select>
+              <select
+                className="number-container"
+                name="secondNum"
+                onChange={this.onChange}
+              >
+                {numberWords.map(each => (
+                  <option key={each.id} value={each.word}>
+                    {each.value}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button type="submit" className="create-button">
+              Create Question
+            </button>
+          </form>
+          <form className="question-form-container" onSubmit={this.createTest}>
+            <ol className="question-list">
+              {questionsArray.map(each => (
+                <li key={each.id} className="list">
+                  <div className="list-item">
+                    <h1 className="question">{each.question}</h1>
+                    <button
+                      type="button"
+                      onClick={this.onDelete}
+                      data-value={each.id}
+                      className="remove-btn"
+                    >
+                      <img
+                        src="https://assets.ccbp.in/frontend/react-js/delete-img.png"
+                        alt="delete"
+                        className="delete-icon"
+                      />
+                    </button>
+                  </div>
+                </li>
               ))}
-            </select>
-            <select
-              className="operator-container"
-              name="sym"
-              onChange={this.onChange}
-            >
-              {operators.map(each => (
-                <option key={each.id} value={each.text}>
-                  {each.operator}
-                </option>
-              ))}
-            </select>
-            <select
-              className="number-container"
-              name="secondNum"
-              onChange={this.onChange}
-            >
-              {numberWords.map(each => (
-                <option key={each.id} value={each.word}>
-                  {each.value}
-                </option>
-              ))}
-            </select>
-          </div>
-          <button type="submit" className="create-button">
-            Create Question
-          </button>
-        </form>
-        {/* <ul className="question-list"></ul> */}
+            </ol>
+            {questionsArray.length > 0 && (
+              <button type="submit" className="submit-question-button">
+                Submit Questions
+              </button>
+            )}
+          </form>
+        </div>
       </div>
     )
   }
