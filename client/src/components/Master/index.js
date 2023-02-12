@@ -91,8 +91,14 @@ class Master extends Component {
 
   createTest = event => {
     event.preventDefault()
+    console.log('test')
     const {questionsArray} = this.state
-    localStorage.setItem('questionList', JSON.stringify(questionsArray))
+    localStorage.setItem('questionsList', JSON.stringify(questionsArray))
+  }
+
+  clearQuestionsArray = () => {
+    this.setState({questionsArray: []})
+    localStorage.removeItem('questionsList')
   }
 
   render() {
@@ -142,9 +148,18 @@ class Master extends Component {
                 ))}
               </select>
             </div>
-            <button type="submit" className="create-button">
-              Create Question
-            </button>
+            <div className="btn-container">
+              <button type="submit" className="create-button">
+                Create Question
+              </button>
+              <button
+                type="button"
+                className="submit-question-button"
+                onClick={this.clearQuestionsArray}
+              >
+                Clear All Questions
+              </button>
+            </div>
           </form>
           <form className="question-form-container" onSubmit={this.createTest}>
             <ol className="question-list">
@@ -167,12 +182,12 @@ class Master extends Component {
                   </div>
                 </li>
               ))}
+              {questionsArray.length > 0 && (
+                <button type="submit" className="submit-question-button">
+                  Submit Questions
+                </button>
+              )}
             </ol>
-            {questionsArray.length > 0 && (
-              <button type="submit" className="submit-question-button">
-                Submit Questions
-              </button>
-            )}
           </form>
         </div>
       </div>
