@@ -9,6 +9,7 @@ const dbPath = path.join(__dirname, "accounts.db");
 const app = express();
 app.use(express.json());
 app.use(cors());
+app.use(express.static(path.join(__dirname + "/public")))
 
 let db = null;
 
@@ -45,10 +46,10 @@ app.post("/api/signup/", async (req, res) => {
 
   try {
     const result = await db.run(insertUserQuery);
-    console.log(result);
+    // console.log(result);
     res.send(result);
   } catch (e) {
-    console.log(e);
+    // console.log(e);
     res.send(e);
   }
 });
@@ -67,17 +68,17 @@ app.post("/api/login/", async (req, res) => {
 
   try {
     const result = await db.get(getUserQuery);
-    console.log(result);
+    // console.log(result);
     if (result === undefined) {
       res.status(400);
       res.send("Invalid User Credentials");
     } else {
       const token = jwt.sign({ id: result.ID }, "secret", { expiresIn: "1h" });
-      console.log(token);
+    //   console.log(token);
       res.json({ result: result, jwt_token: token });
     }
   } catch (e) {
-    console.log(e);
+    // console.log(e);
     res.send(e);
   }
 });

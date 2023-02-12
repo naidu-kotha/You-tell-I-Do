@@ -41,19 +41,21 @@ class Master extends Component {
   getAnswers = () => {
     const answersList = localStorage.getItem('answersList')
     // console.log(answersList)
-    const answersArray = []
-    answersArray.push(JSON.parse(answersList))
-    // console.log(answersArray)
-    this.setState({answersArray: answersArray[0]})
+    if (answersList !== null) {
+      const answersArray = []
+      answersArray.push(JSON.parse(answersList))
+      // console.log(answersArray)
+      this.setState({answersArray: answersArray[0]})
+    }
   }
 
   displayAnswers = () => {
     const {answersArray} = this.state
-    console.log(answersArray)
+    // console.log(answersArray)
     const ans = []
     const array = Object.entries(answersArray)
     ans.push(array)
-    console.log(array)
+    // console.log(array)
 
     return (
       <>
@@ -107,15 +109,15 @@ class Master extends Component {
     // console.log(num1Obj.value)
     // console.log(operatorObj.operator)
     // console.log(num2Obj.value)
-    console.log(question)
+    // console.log(question)
     const result = this.calculateResult(num1, op, num2)
-    console.log(result)
+    // console.log(result)
     const mathQuestion = {
       id: uuid(),
       question,
       answer: result,
     }
-    console.log(mathQuestion)
+    // console.log(mathQuestion)
     this.setState(prevState => ({
       questionsArray: [...prevState.questionsArray, mathQuestion],
     }))
@@ -130,7 +132,7 @@ class Master extends Component {
 
   createTest = event => {
     event.preventDefault()
-    console.log('test')
+    // console.log('test')
     const {questionsArray} = this.state
     localStorage.setItem('questionsList', JSON.stringify(questionsArray))
   }
@@ -141,7 +143,7 @@ class Master extends Component {
   }
 
   render() {
-    const {questionsArray} = this.state
+    const {questionsArray, answersArray} = this.state
     const masterJwtToken = Cookies.get('master_jwt_token')
     if (masterJwtToken === undefined) {
       return <Redirect to="/login" />
@@ -229,7 +231,7 @@ class Master extends Component {
             </ol>
           </form>
         </div>
-        {this.displayAnswers()}
+        {answersArray && this.displayAnswers()}
       </div>
     )
   }
